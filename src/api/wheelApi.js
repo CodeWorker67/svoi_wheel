@@ -53,7 +53,8 @@ export function createWheelCheckout(initData, { duration_key, target, payment })
 }
 
 export function isWheelApiConfigured() {
-  return Boolean(API_BASE) || import.meta.env.DEV;
+  // Dev: Vite proxy /api. Prod: явный VITE_WHEEL_API_URL или same-origin (/api через nginx).
+  return import.meta.env.DEV || import.meta.env.PROD;
 }
 
 export async function fetchRecentWins(limit = 24) {
