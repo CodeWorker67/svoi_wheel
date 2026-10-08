@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-zoomer-dark text-white overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .card-dark {
+    @apply bg-zoomer-card rounded-card border border-zoomer-border p-6 shadow-card;
+  }
+  .panel-zoomer {
+    @apply rounded-2xl border border-zoomer-border bg-gradient-to-br from-[#0d1b2e]/95 to-[#050a14]/95 shadow-card;
+  }
+  .ticker-marquee {
+    animation: ticker-marquee-scroll var(--ticker-duration, 28s) linear infinite;
+    will-change: transform;
+  }
+  .ticker-marquee-paused {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes ticker-marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(180deg, #93c5fd 0%, #38bdf8 35%, #2563eb 70%, #1e40af 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-radial-glow {
+    background: radial-gradient(ellipse at 50% 0%, rgba(37, 99, 235, 0.18) 0%, transparent 60%);
+  }
+  .bg-page {
+    background: #050a14;
+  }
+}
