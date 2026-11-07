@@ -1,137 +1,104 @@
-import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const COLORS = ['#ffb347', '#38bdf8', '#f472b6', '#4ade80', '#fbbf24', '#f97316', '#a78bfa', '#fff7ed'];
 
-function confettiPieces(seed, count = 56) {
-  return Array.from({ length: count }, (_, i) => {
-    const n = seed * 997 + i * 131;
+function buildConfetti(seed) {
+  return Array.from({ length: 48 }, (_, i) => {
+    const n = seed * 991 + i * 137;
     return {
-      id: `${seed}-${i}`,
-      left: `${(n * 17) % 100}%`,
-      delay: (i % 12) * 0.07,
-      duration: 2.2 + (i % 5) * 0.35,
-      size: 6 + (i % 5) * 2,
+      id: `${seed}-c-${i}`,
+      left: `${(n * 19) % 98 + 1}%`,
+      delay: `${(i % 14) * 0.08}s`,
+      duration: `${2.4 + (i % 4) * 0.3}s`,
+      w: 8 + (i % 4) * 3,
+      h: 12 + (i % 3) * 4,
       color: COLORS[(n + i) % COLORS.length],
-      drift: ((n % 41) - 20) * 4,
-      rotate: (n % 360) - 180,
+      drift: `${((n % 50) - 25) * 6}px`,
     };
   });
 }
 
-function radialBurst(seed, count = 36) {
-  return Array.from({ length: count }, (_, i) => {
-    const angle = (360 / count) * i;
-    const dist = 90 + ((seed + i * 9) % 70);
+function buildSparks(seed) {
+  return Array.from({ length: 32 }, (_, i) => {
+    const angle = (360 / 32) * i;
+    const dist = 75 + ((seed + i * 11) % 85);
     return {
-      id: `b-${seed}-${i}`,
+      id: `${seed}-s-${i}`,
       angle,
       dist,
-      delay: (i % 6) * 0.05,
+      delay: `${0.55 * (i % 2) + (i % 7) * 0.04}s`,
+      size: 9 + (i % 3) * 4,
       color: COLORS[(seed + i) % COLORS.length],
-      size: 7 + (i % 3) * 3,
     };
   });
 }
 
-export default function IphoneWinCelebration() {
-  const confetti = useMemo(() => confettiPieces(1), []);
-  const burstA = useMemo(() => radialBurst(3), []);
-  const burstB = useMemo(() => radialBurst(19), []);
+export default function IphoneWinCelebration({ playKey }) {
+  const [portalHost, setPortalHost] = useState(null);
 
-  return (
-    <div
-      className="pointer-events-none fixed inset-0 z-[200] overflow-hidden"
-      aria-hidden
-    >
-      <motion.div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,179,71,0.22),transparent_55%)]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 0.65, 0] }}
-        transition={{ duration: 3.2, ease: 'easeOut' }}
-      />
+  useEffect(() => {
+    setPortalHost(document.body);
+  }, []);
+
+  const confetti = useMemo(() => buildConfetti(playKey), [playKey]);
+  const sparks = useMemo(() => buildSparks(playKey + 7), [playKey]);
+
+  if (!portalHost) return null;
+
+  return createPortal(
+    <div className="iphone-celebration-layer" role="presentation">
+      <div className="iphone-celebration-flash" />
+      <div className="iphone-celebration-ring" />
 
       {confetti.map((p) => (
-        <motion.span
+        <span
           key={p.id}
-          className="iphone-confetti absolute rounded-sm"
+          className="iphone-confetti-piece"
           style={{
             left: p.left,
-            top: '-8%',
-            width: p.size,
-            height: p.size * 1.45,
+            width: p.w,
+            height: p.h,
             backgroundColor: p.color,
-            boxShadow: `0 0 12px ${p.color}`,
-          }}
-          initial={{ y: 0, x: 0, opacity: 1, rotate: 0 }}
-          animate={{
-            y: '115vh',
-            x: p.drift,
-            opacity: [1, 1, 0.85, 0],
-            rotate: p.rotate + 540,
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            ease: [0.12, 0.55, 0.25, 1],
-            repeat: 1,
-            repeatDelay: 0.35,
+            boxShadow: `0 0 14px ${p.color}`,
+            animationDuration: p.duration,
+            animationDelay: p.delay,
+            ['--iphone-drift']: p.drift,
           }}
         />
       ))}
 
-      {[burstA, burstB].map((burst, bi) => (
-        <div
-          key={bi}
-          className="absolute left-1/2"
-          style={{ top: bi === 0 ? '38%' : '52%' }}
-        >
-          {burst.map((p) => {
-            const rad = (p.angle * Math.PI) / 180;
-            const tx = Math.cos(rad) * p.dist;
-            const ty = Math.sin(rad) * p.dist;
-            return (
-              <motion.span
-                key={p.id}
-                className="absolute left-0 top-0 rounded-full"
-                style={{
-                  width: p.size,
-                  height: p.size,
-                  marginLeft: -p.size / 2,
-                  marginTop: -p.size / 2,
-                  backgroundColor: p.color,
-                  boxShadow: `0 0 16px ${p.color}`,
-                }}
-                initial={{ x: 0, y: 0, opacity: 1, scale: 1.25 }}
-                animate={{ x: tx, y: ty, opacity: 0, scale: 0.2 }}
-                transition={{
-                  duration: 1.35,
-                  delay: bi * 0.55 + p.delay,
-                  ease: [0.12, 0.85, 0.22, 1],
-                }}
-              />
-            );
-          })}
-        </div>
-      ))}
+      <div className="iphone-spark-origin">
+        {sparks.map((p) => {
+          const rad = (p.angle * Math.PI) / 180;
+          const tx = Math.cos(rad) * p.dist;
+          const ty = Math.sin(rad) * p.dist;
+          return (
+            <span
+              key={p.id}
+              className="iphone-spark"
+              style={{
+                width: p.size,
+                height: p.size,
+                backgroundColor: p.color,
+                boxShadow: `0 0 18px ${p.color}`,
+                animationDelay: p.delay,
+                ['--iphone-spark-x']: `${tx}px`,
+                ['--iphone-spark-y']: `${ty}px`,
+              }}
+            />
+          );
+        })}
+      </div>
 
-      <motion.div
-        className="absolute left-1/2 top-[42%] -translate-x-1/2 text-5xl drop-shadow-[0_0_18px_rgba(255,179,71,0.9)]"
-        initial={{ scale: 0.2, opacity: 0 }}
-        animate={{ scale: [0.2, 1.45, 1.05], opacity: [0, 1, 1] }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-      >
-        🎉
-      </motion.div>
-
-      <motion.p
-        className="absolute left-1/2 top-[48%] w-full max-w-[16rem] -translate-x-1/2 text-center text-sm font-bold tracking-wide text-[#ffb347]"
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: [0, 1, 1, 0], y: [8, 0, 0, -6] }}
-        transition={{ duration: 2.8, ease: 'easeOut' }}
-      >
-        ДЖЕКПОТ!
-      </motion.p>
-    </div>
+      <div className="iphone-celebration-banner">
+        <span className="iphone-celebration-emoji" aria-hidden>
+          🎉
+        </span>
+        <p className="iphone-celebration-title">ДЖЕКПОТ!</p>
+        <p className="iphone-celebration-sub">IPHONE 18 PRO</p>
+      </div>
+    </div>,
+    portalHost,
   );
 }

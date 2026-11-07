@@ -159,6 +159,7 @@ export default function FortuneWheel({ onScreenChange }) {
   const displayRotation = useTransform(rotation, (v) => `${v}deg`);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
+  const [iphoneCelebrateKey, setIphoneCelebrateKey] = useState(0);
   const [screen, setScreen] = useState('wheel');
 
   const goSubscription = useCallback(() => {
@@ -237,18 +238,24 @@ export default function FortuneWheel({ onScreenChange }) {
 
     setSpinning(true);
     setResult(null);
+    setIphoneCelebrateKey(0);
 
     let winIndex = 0;
     let rimLabel = '';
+    let beginPrizeId = '';
 
     try {
       if (apiOk) {
         const begin = await beginWheelSpin(initData);
-        winIndex = prizeIndexById(begin.prize_id);
+        beginPrizeId = begin.prize_id || '';
+        winIndex = prizeIndexById(beginPrizeId);
         if (typeof begin.win_index === 'number' && begin.win_index !== winIndex) {
-          console.warn('Wheel win_index mismatch', begin.win_index, winIndex, begin.prize_id);
+          console.warn('Wheel win_index mismatch', begin.win_index, winIndex, beginPrizeId);
         }
         rimLabel = begin.rim || WHEEL_PRIZES[winIndex]?.rim || '';
+        if (beginPrizeId === 'iphone') {
+          setIphoneCelebrateKey((k) => k + 1);
+        }
       } else {
         webApp?.showAlert?.('API колеса не настроен');
         setSpinning(false);
@@ -304,7 +311,9 @@ export default function FortuneWheel({ onScreenChange }) {
 
   return (
     <div className="flex flex-col items-center w-full max-w-[min(100vw,420px)] mx-auto">
-      {result?.id === 'iphone' ? <IphoneWinCelebration /> : null}
+      {iphoneCelebrateKey > 0 ? (
+        <IphoneWinCelebration key={iphoneCelebrateKey} playKey={iphoneCelebrateKey} />
+      ) : null}
       {error && (
         <p className="mb-2 w-full px-2 text-center text-xs text-amber-400/90">{error}</p>
       )}

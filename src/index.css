@@ -37,6 +37,167 @@
   }
 }
 
+/* Выигрыш iPhone — портал на body, только CSS-анимации (Telegram WebView) */
+.iphone-celebration-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.iphone-celebration-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 42%, rgba(255, 179, 71, 0.38), transparent 62%);
+  animation: iphone-flash-pulse 3.2s ease-out forwards;
+}
+
+.iphone-celebration-ring {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: min(92vw, 360px);
+  aspect-ratio: 1;
+  margin-left: min(-46vw, -180px);
+  border-radius: 50%;
+  border: 3px solid rgba(255, 179, 71, 0.65);
+  box-shadow:
+    0 0 40px rgba(255, 179, 71, 0.55),
+    inset 0 0 30px rgba(255, 179, 71, 0.25);
+  animation: iphone-ring-pop 1.8s ease-out forwards;
+}
+
+@keyframes iphone-flash-pulse {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes iphone-ring-pop {
+  0% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+.iphone-confetti-piece {
+  position: absolute;
+  top: -12vh;
+  border-radius: 2px;
+  opacity: 0.95;
+  animation-name: iphone-confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 2;
+}
+
+@keyframes iphone-confetti-fall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--iphone-drift, 0px), 115vh, 0) rotate(680deg);
+    opacity: 0.15;
+  }
+}
+
+.iphone-spark-origin {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 0;
+  height: 0;
+}
+
+.iphone-spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin-left: -50%;
+  margin-top: -50%;
+  border-radius: 50%;
+  opacity: 1;
+  animation: iphone-spark-burst 1.35s ease-out forwards;
+}
+
+@keyframes iphone-spark-burst {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--iphone-spark-x), var(--iphone-spark-y), 0) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.iphone-celebration-banner {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translateX(-50%);
+  text-align: center;
+  animation: iphone-banner-pop 0.85s ease-out forwards;
+}
+
+.iphone-celebration-emoji {
+  display: block;
+  font-size: 3.25rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 16px rgba(255, 179, 71, 0.95));
+}
+
+.iphone-celebration-title {
+  margin-top: 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #ffb347;
+  text-shadow: 0 0 20px rgba(255, 179, 71, 0.75);
+}
+
+.iphone-celebration-sub {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff7ed;
+  opacity: 0.95;
+}
+
+@keyframes iphone-banner-pop {
+  0% {
+    transform: translateX(-50%) scale(0.4);
+    opacity: 0;
+  }
+  70% {
+    transform: translateX(-50%) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
 @layer utilities {
   .text-gradient {
     background: linear-gradient(180deg, #93c5fd 0%, #38bdf8 35%, #2563eb 70%, #1e40af 100%);
