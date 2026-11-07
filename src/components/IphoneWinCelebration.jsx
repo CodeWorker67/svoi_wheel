@@ -96,7 +96,6 @@ export default function IphoneWinCelebration({ playKey }) {
           🎉
         </span>
         <p className="iphone-celebration-title">ДЖЕКПОТ!</p>
-        <p className="iphone-celebration-sub">IPHONE 18 PRO</p>
       </div>
     </div>,
     portalHost,

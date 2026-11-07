@@ -175,14 +175,6 @@
   text-shadow: 0 0 20px rgba(255, 179, 71, 0.75);
 }
 
-.iphone-celebration-sub {
-  margin-top: 0.25rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #fff7ed;
-  opacity: 0.95;
-}
-
 @keyframes iphone-banner-pop {
   0% {
     transform: translateX(-50%) scale(0.4);

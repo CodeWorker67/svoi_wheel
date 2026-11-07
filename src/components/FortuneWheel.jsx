@@ -253,9 +253,6 @@ export default function FortuneWheel({ onScreenChange }) {
           console.warn('Wheel win_index mismatch', begin.win_index, winIndex, beginPrizeId);
         }
         rimLabel = begin.rim || WHEEL_PRIZES[winIndex]?.rim || '';
-        if (beginPrizeId === 'iphone') {
-          setIphoneCelebrateKey((k) => k + 1);
-        }
       } else {
         webApp?.showAlert?.('API колеса не настроен');
         setSpinning(false);
@@ -265,6 +262,9 @@ export default function FortuneWheel({ onScreenChange }) {
       runSpinAnimation(winIndex, async () => {
         const prize = WHEEL_PRIZES[winIndex];
         setResult({ ...prize, rim: prize.rim || rimLabel });
+        if (prize.id === 'iphone' || beginPrizeId === 'iphone') {
+          setIphoneCelebrateKey((k) => k + 1);
+        }
         try {
           if (apiOk) {
             await completeWheelSpin(initData);
