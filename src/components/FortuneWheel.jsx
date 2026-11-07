@@ -13,6 +13,7 @@ import AttemptsBanner from './AttemptsBanner';
 import RecentWinsTicker from './RecentWinsTicker';
 import SpinRewardsGuide from './SpinRewardsGuide';
 import SubscriptionCheckout from './SubscriptionCheckout';
+import IphoneWinCelebration from './IphoneWinCelebration';
 
 const CX = 200;
 const CY = 200;
@@ -256,7 +257,7 @@ export default function FortuneWheel({ onScreenChange }) {
 
       runSpinAnimation(winIndex, async () => {
         const prize = WHEEL_PRIZES[winIndex];
-        setResult({ ...prize, rim: rimLabel || prize.rim });
+        setResult({ ...prize, rim: prize.rim || rimLabel });
         try {
           if (apiOk) {
             await completeWheelSpin(initData);
@@ -268,7 +269,12 @@ export default function FortuneWheel({ onScreenChange }) {
         }
         await reload();
         setSpinning(false);
-        webApp?.HapticFeedback?.notificationOccurred?.('success');
+        if (prize.id === 'iphone') {
+          webApp?.HapticFeedback?.notificationOccurred?.('success');
+          webApp?.HapticFeedback?.impactOccurred?.('heavy');
+        } else {
+          webApp?.HapticFeedback?.notificationOccurred?.('success');
+        }
       });
     } catch (e) {
       setSpinning(false);
@@ -369,17 +375,36 @@ export default function FortuneWheel({ onScreenChange }) {
         </button>
       </div>
 
-      <div className="mt-6 min-h-[5.5rem] w-full text-center px-4">
+      <div className="relative mt-6 min-h-[5.5rem] w-full text-center px-4">
         {result ? (
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="card-dark inline-block max-w-[min(100%,22rem)] px-6 py-4"
+            initial={{ opacity: 0, y: 8, scale: 0.96 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: result.id === 'iphone' ? [0.96, 1.04, 1] : 1,
+            }}
+            transition={{ duration: result.id === 'iphone' ? 0.55 : 0.35 }}
+            className={clsx(
+              'card-dark relative inline-block max-w-[min(100%,22rem)] px-6 py-4 overflow-visible',
+              result.id === 'iphone' &&
+                'border border-[#ffb347]/50 shadow-[0_0_32px_rgba(255,179,71,0.45)]',
+            )}
           >
+            {result.id === 'iphone' ? <IphoneWinCelebration /> : null}
             <p className="text-sm text-gray-400 mb-1">Ваш приз</p>
-            <p className="text-lg font-bold text-gradient">{getPrizeTitle(result)}</p>
+            <p
+              className={clsx(
+                'relative z-20 text-lg font-bold',
+                result.id === 'iphone'
+                  ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#ffb347] via-[#fff7ed] to-[#f97316]'
+                  : 'text-gradient',
+              )}
+            >
+              {getPrizeTitle(result)}
+            </p>
             {getPrizeWinHint(result) ? (
-              <p className="mt-2 text-xs leading-snug text-gray-400 normal-case">
+              <p className="relative z-20 mt-2 text-xs leading-snug text-gray-400 normal-case">
                 {getPrizeWinHint(result)}
               </p>
             ) : null}

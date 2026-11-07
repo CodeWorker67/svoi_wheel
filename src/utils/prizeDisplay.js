@@ -20,7 +20,7 @@ export function getPrizeTitle(prizeOrId) {
     case 'money':
       return prize.rim;
     case 'apple':
-      return prize.rim;
+      return prize.rim || 'IPHONE 18 PRO';
     case 'secret':
       return 'Секретный приз';
     default:
@@ -40,6 +40,8 @@ export function getPrizeWinHint(prizeOrId) {
       return 'активировать скидку можно после выбора тарифа в боте.';
     case 'vpn':
       return 'сейчас пришлем в бота уведомление о продлении вашей подписки!';
+    case 'apple':
+      return 'фантастический приз — поздравляем! 🎆';
     default:
       return null;
   }
