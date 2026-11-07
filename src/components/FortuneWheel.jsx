@@ -304,6 +304,7 @@ export default function FortuneWheel({ onScreenChange }) {
 
   return (
     <div className="flex flex-col items-center w-full max-w-[min(100vw,420px)] mx-auto">
+      {result?.id === 'iphone' ? <IphoneWinCelebration /> : null}
       {error && (
         <p className="mb-2 w-full px-2 text-center text-xs text-amber-400/90">{error}</p>
       )}
@@ -391,7 +392,6 @@ export default function FortuneWheel({ onScreenChange }) {
                 'border border-[#ffb347]/50 shadow-[0_0_32px_rgba(255,179,71,0.45)]',
             )}
           >
-            {result.id === 'iphone' ? <IphoneWinCelebration /> : null}
             <p className="text-sm text-gray-400 mb-1">Ваш приз</p>
             <p
               className={clsx(
