@@ -1,7 +1,7 @@
 /** Секторы по часовой стрелке от указателя (верх). weight — % выпадения (0 = никогда). */
 export const WHEEL_PRIZES = [
   { id: 'vpn_2w', rim: '2 НЕДЕЛИ', kind: 'vpn', fill: '#1e2f4f', weight: 20 },
-  { id: 'cash_100k', rim: '100 000 ₽', kind: 'money', fill: '#c97812', glow: '#ffb347', weight: 0 },
+  { id: 'cash_500k', rim: '500 000 ₽', kind: 'money', fill: '#c97812', glow: '#ffb347', weight: 0 },
   { id: 'vpn_1m', rim: '1 МЕСЯЦ', kind: 'vpn', fill: '#1e2f4f', weight: 10 },
   { id: 'disc_50', rim: 'СКИДКА', kind: 'percent', value: '50%', fill: '#2a5088', weight: 7 },
   { id: 'disc_10', rim: 'СКИДКА', kind: 'percent', value: '10%', fill: '#1a2848', weight: 35 },
