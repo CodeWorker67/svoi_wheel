@@ -5,6 +5,14 @@ import { useTelegram } from '../hooks/useTelegram';
 const PARTNER_BOT = 'https://t.me/fastmobilevpnbot?start=partner_';
 const REFERRAL_GOAL = 7;
 
+/** Как на бекенде PURCHASE_DAYS_TO_ATTEMPTS (30→1, 90→3, 365→12, 730→24). */
+const NEW_PAYMENT_SPINS = [
+  { title: 'Подписка 1 мес.', spins: 1 },
+  { title: 'Подписка 3 мес.', spins: 3 },
+  { title: 'Подписка 1 год', spins: 12 },
+  { title: 'Подписка 2 года', spins: 24 },
+];
+
 function spinLabel(count) {
   if (count === 1) return '+1 вращение';
   if (count >= 2 && count <= 4) return `+${count} вращения`;
@@ -93,7 +101,9 @@ export default function SpinRewardsGuide({
           <h3 className="text-base font-bold text-white">За новую оплату</h3>
         </div>
         <div className="space-y-2">
-          <RewardRow title="Подписка 3 мес." spins={1} />
+          {NEW_PAYMENT_SPINS.map(({ title, spins }) => (
+            <RewardRow key={title} title={title} spins={spins} />
+          ))}
         </div>
         {onBuySubscription && (
           <button

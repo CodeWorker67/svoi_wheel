@@ -17,9 +17,15 @@ function devicesPhrase(n) {
   return 'устройств';
 }
 
+function periodPhrase(months) {
+  if (months === 12) return '1 год';
+  if (months === 24) return '2 года';
+  return `${months} мес.`;
+}
+
 function planDurationLabel(plan, deviceSlots) {
   const d = deviceSlots ?? 5;
-  return `${plan.months} мес. · ${d} ${devicesPhrase(d)}`;
+  return `${periodPhrase(plan.months)} · ${d} ${devicesPhrase(d)}`;
 }
 
 function spinBonusLine(count) {
