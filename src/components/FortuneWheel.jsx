@@ -77,8 +77,9 @@ function SegmentCenter({ prize, index }) {
     case 'apple': {
       const axisX = 11.85;
       const axisY = 11.5;
+      const appleFill = prize.golden ? '#ffd54f' : '#ffb347';
       node = (
-        <g fill="#ffb347" transform={`scale(1.496) translate(${-axisX}, ${-axisY})`}>
+        <g fill={appleFill} transform={`scale(1.496) translate(${-axisX}, ${-axisY})`}>
           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
         </g>
       );
@@ -102,12 +103,40 @@ function SegmentCenter({ prize, index }) {
       break;
   }
 
+  if (!node) return null;
+
   return (
     <g transform={`translate(${pos.x}, ${pos.y}) rotate(${mid + 90})`}>{node}</g>
   );
 }
 
-function RimLabel({ index, text }) {
+function SectorImage({ prize, index }) {
+  if (!prize.sectorImage) return null;
+  const mid = index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+  const pos = polarToCartesian(CX, CY, R_OUT - 50, mid);
+  const extra = prize.sectorImageRotate ?? 0;
+  const scale = prize.sectorImageScale ?? 1;
+  const portrait = Math.abs(extra % 180) === 90;
+  const baseW = portrait ? 32 : 54;
+  const baseH = portrait ? 54 : 32;
+  const w = baseW * scale;
+  const h = baseH * scale;
+  return (
+    <g transform={`translate(${pos.x}, ${pos.y}) rotate(${mid + 90 + extra})`}>
+      <image
+        href={prize.sectorImage}
+        x={-w / 2}
+        y={-h / 2}
+        width={w}
+        height={h}
+        preserveAspectRatio="xMidYMid meet"
+        className="select-none pointer-events-none"
+      />
+    </g>
+  );
+}
+
+function RimLabel({ index, text, golden }) {
   const mid = index * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
   const pos = polarToCartesian(CX, CY, R_OUT - 22, mid);
   return (
@@ -117,11 +146,12 @@ function RimLabel({ index, text }) {
       textAnchor="middle"
       dominantBaseline="middle"
       transform={`rotate(${mid}, ${pos.x}, ${pos.y})`}
-      fill="rgba(255,255,255,0.92)"
+      fill={golden ? '#fff3d6' : 'rgba(255,255,255,0.92)'}
       fontSize="9.5"
-      fontWeight="700"
+      fontWeight="800"
       letterSpacing="0.04em"
-      className="select-none pointer-events-none"
+      className={clsx('select-none pointer-events-none', golden && 'wheel-sector-golden-label')}
+      filter={golden ? 'url(#golden-text-glow)' : undefined}
     >
       {text}
     </text>
@@ -337,7 +367,26 @@ export default function FortuneWheel({ onScreenChange }) {
         >
           <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-2xl">
             <defs>
-              {WHEEL_PRIZES.map((p, i) => (
+              <filter id="golden-sector-glow" x="-35%" y="-35%" width="170%" height="170%">
+                <feGaussianBlur stdDeviation="5" result="blur" />
+                <feFlood floodColor="#ffc107" floodOpacity="0.9" result="color" />
+                <feComposite in="color" in2="blur" operator="in" result="glow" />
+                <feMerge>
+                  <feMergeNode in="glow" />
+                  <feMergeNode in="glow" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter id="golden-text-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1.5" result="blur" />
+                <feFlood floodColor="#ffd54f" floodOpacity="0.92" result="color" />
+                <feComposite in="color" in2="blur" operator="in" result="glow" />
+                <feMerge>
+                  <feMergeNode in="glow" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              {WHEEL_PRIZES.map((p) => (
                 <linearGradient
                   key={p.id}
                   id={`grad-${p.id}`}
@@ -346,23 +395,61 @@ export default function FortuneWheel({ onScreenChange }) {
                   x2="100%"
                   y2="100%"
                 >
-                  <stop offset="0%" stopColor={p.fill} />
-                  <stop offset="100%" stopColor="#0a1020" stopOpacity="0.35" />
+                  <stop offset="0%" stopColor={p.golden ? '#ffe082' : p.fill} />
+                  <stop offset="45%" stopColor={p.golden ? '#e8b030' : p.fill} />
+                  <stop offset="100%" stopColor={p.golden ? '#8a6518' : '#0a1020'} stopOpacity={p.golden ? 1 : 0.35} />
                 </linearGradient>
               ))}
             </defs>
-            {WHEEL_PRIZES.map((prize, i) => (
-              <g key={prize.id}>
+            <g className="wheel-sectors-base">
+              {WHEEL_PRIZES.map((prize, i) => (
                 <path
+                  key={prize.id}
                   d={wedgePath(i)}
                   fill={`url(#grad-${prize.id})`}
                   stroke="rgba(0,0,0,0.45)"
                   strokeWidth="1.2"
                 />
-                <RimLabel index={i} text={prize.rim} />
-                <SegmentCenter prize={prize} index={i} />
-              </g>
-            ))}
+              ))}
+            </g>
+            <g className="wheel-sectors-content">
+              {WHEEL_PRIZES.map((prize, i) => {
+                const golden = Boolean(prize.golden);
+                return (
+                  <g key={prize.id}>
+                    <RimLabel index={i} text={prize.rim} golden={golden} />
+                    <SectorImage prize={prize} index={i} />
+                    <SegmentCenter prize={prize} index={i} />
+                  </g>
+                );
+              })}
+            </g>
+            <g className="wheel-sectors-golden-overlay">
+              {WHEEL_PRIZES.map((prize, i) => {
+                if (!prize.golden) return null;
+                const d = wedgePath(i);
+                return (
+                  <g key={`${prize.id}-glow`}>
+                    <path
+                      d={d}
+                      fill="none"
+                      stroke="#ffd54f"
+                      strokeWidth="6"
+                      strokeLinejoin="round"
+                      className="wheel-sector-golden-glow"
+                      filter="url(#golden-sector-glow)"
+                    />
+                    <path
+                      d={d}
+                      fill="none"
+                      stroke="#fff8e1"
+                      strokeWidth="2.5"
+                      className="wheel-sector-golden-edge"
+                    />
+                  </g>
+                );
+              })}
+            </g>
             <circle cx={CX} cy={CY} r={R_IN + 4} fill="#0d1528" stroke="rgba(74,232,196,0.35)" strokeWidth="2" />
           </svg>
         </motion.div>

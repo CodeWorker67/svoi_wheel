@@ -210,4 +210,46 @@
   .bg-page {
     background: #050a14;
   }
+
+  .wheel-sector-golden-glow {
+    animation: wheel-golden-glow-pulse 2.6s ease-in-out infinite;
+  }
+
+  .wheel-sector-golden-edge {
+    animation: wheel-golden-edge-pulse 2.6s ease-in-out infinite;
+  }
+
+  .wheel-sector-golden-label {
+    animation: wheel-golden-label-pulse 2.6s ease-in-out infinite;
+  }
+
+  @keyframes wheel-golden-glow-pulse {
+    0%,
+    100% {
+      opacity: 0.58;
+    }
+    50% {
+      opacity: 0.88;
+    }
+  }
+
+  @keyframes wheel-golden-edge-pulse {
+    0%,
+    100% {
+      stroke-opacity: 0.8;
+    }
+    50% {
+      stroke-opacity: 0.98;
+    }
+  }
+
+  @keyframes wheel-golden-label-pulse {
+    0%,
+    100% {
+      opacity: 0.9;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
 }
